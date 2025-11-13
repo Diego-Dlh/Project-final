@@ -1,29 +1,16 @@
-"""
-Propósito: API REST para LLM Ollama Phi3
-Autor: [Tu Nombre]
-Fecha: [Fecha]
-"""
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
+from pydantic import BaseModel
 import ollama
-import logging
-import os
 
 app = FastAPI()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
-)
+class PromptRequest(BaseModel):
+    prompt: str
 
 @app.post("/chat")
-async def chat(request: Request):
-    data = await request.json()
-    mensaje = data.get("mensaje")
+async def chat(req: PromptRequest):
     try:
-        respuesta = ollama.chat(model="phi3", prompt=mensaje)
-        logging.info({"request": mensaje, "response": respuesta})
-        return {"respuesta": respuesta}
+        result = ollama.chat(model="phi3", prompt=req.prompt)
+        return {"response": result}
     except Exception as e:
-        logging.error({"error": str(e)})
-        return {"error": str(e)}
-
+        raise HTTPException(status_code=500, detail=str(e))
