@@ -1,31 +1,33 @@
-"""
-Entrenamiento modelo regresión lineal, logging MLflow
-Autor: [Tu Nombre]
-Fecha: [Fecha]
-"""
-import mlflow
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
-from joblib import dump
+import joblib
+import mlflow
 
-mlflow.set_tracking_uri("http://mlflow:5000")
-mlflow.start_run(run_name="linear_regression")
+# Cargar dataset
+df = pd.read_csv('SMSSpamCollection', sep='\t', header=None, names=['label', 'message'])
+X = df['message']
+y = df['label'].map({'ham': 0, 'spam': 1})
 
-data = pd.read_csv("data/train.csv")
-X = data.drop("target", axis=1)
-y = data["target"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-pipeline = Pipeline([
-    ("scaler", StandardScaler()),
-    ("reg", LinearRegression())
+# Crear pipeline
+pipe = Pipeline([
+    ('vect', CountVectorizer()),
+    ('clf', LogisticRegression())
 ])
-pipeline.fit(X, y)
 
-mlflow.sklearn.log_model(pipeline, "model")
-mlflow.log_param("model_type", "LinearRegression")
-mlflow.log_metric("score", pipeline.score(X, y))
+pipe.fit(X_train, y_train)
+accuracy = pipe.score(X_test, y_test)
 
-dump(pipeline, "models/reg_model.joblib")
+joblib.dump(pipe, 'spam_model.pkl')
+
+# Log en MLflow
+mlflow.start_run()
+mlflow.log_param("model_type", "LogisticRegression")
+mlflow.log_metric("accuracy", accuracy)
+mlflow.sklearn.log_model(pipe, "model")
 mlflow.end_run()
+print(f"Accuracy: {accuracy}")
