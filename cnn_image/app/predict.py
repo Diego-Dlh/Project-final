@@ -1,36 +1,47 @@
 import torch
-from PIL import Image
 import torchvision.transforms as transforms
+from PIL import Image
+from fastapi import FastAPI, File, UploadFile
+import io
+import torch.nn.functional as F
 
-class SimpleCNN(torch.nn.Module):  # igual que el de train.py
-    # ... def __init__ y forward ...
-    pass
+class SimpleCNN(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = torch.nn.Conv2d(1, 16, 3, 1)
+        self.conv2 = torch.nn.Conv2d(16, 32, 3, 1)
+        self.fc1 = torch.nn.Linear(32*5*5, 128)
+        self.fc2 = torch.nn.Linear(128, 10)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2)
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2)
+        x = x.view(-1, 32*5*5)
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
 
 model = SimpleCNN()
-model.load_state_dict(torch.load("cnn_cat.pth"))
+model.load_state_dict(torch.load("mnist_cnn.pth"))
 model.eval()
 
 transform = transforms.Compose([
-    transforms.Resize((64, 64)),
-    transforms.ToTensor()
+    transforms.Grayscale(num_output_channels=1),
+    transforms.Resize((28, 28)),
+    transforms.ToTensor(),
+    transforms.Normalize((0.1307,), (0.3081,))
 ])
-
-def predict_image(img_path):
-    img = Image.open(img_path).convert("RGB")
-    img = transform(img).unsqueeze(0)
-    outputs = model(img)
-    _, predicted = torch.max(outputs.data, 1)
-    return "cat" if predicted.item() == 0 else "not cat"
-
-# API REST (usando FastAPI)
-from fastapi import FastAPI, UploadFile, File
 
 app = FastAPI()
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    img_path = f"temp.jpg"
-    with open(img_path, "wb") as buffer:
-        buffer.write(await file.read())
-    label = predict_image(img_path)
-    return {"prediction": label}
+    image_bytes = await file.read()
+    image = Image.open(io.BytesIO(image_bytes))
+    image = transform(image).unsqueeze(0)
+    with torch.no_grad():
+        output = model(image)
+        pred = output.argmax(dim=1, keepdim=True).item()
+    return {"prediction": pred}

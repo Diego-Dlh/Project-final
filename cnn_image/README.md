@@ -1,17 +1,19 @@
-# Cat Image Recognition (CNN)
+# MNIST CNN Classification
 
-Reconoce si una imagen contiene un gato usando una CNN sencilla.
+Este módulo entrena un simple modelo CNN para clasificar dígitos escritos a mano (0-9).
 
 ## Entrenamiento
-Estructura tu dataset en data/train/cat/ y data/train/not_cat/
-Ejecuta:
+Ejecutar:
 python app/train.py
 
-## Predicción API
+## API de predicción
 POST /predict
-Content-Type: multipart/form-data (imagen .jpg)
-Respuesta: {"prediction": "cat"}
+Envía una imagen jpg/png en el cuerpo multipart/form-data
+Respuesta:
+{
+  "prediction": int  # dígito 0-9 classificado
+}
 
 ## Docker
-docker build -t cat-cnn .
-docker run -p 8000:8000 cat-cnn
+docker build -t mnist-cnn .
+docker run -p 8000:8000 mnist-cnn

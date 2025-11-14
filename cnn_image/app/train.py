@@ -1,54 +1,46 @@
 import torch
-import torchvision
-import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.optim as optim
-
-# Descargar dataset público de gatos (ej: Cats vs Dogs de Kaggle)
-# Usaremos solo la carpeta "cat" y "not cat" para el ejemplo
-
-transform = transforms.Compose([
-    transforms.Resize((64, 64)),
-    transforms.ToTensor()
-])
-
-trainset = torchvision.datasets.ImageFolder(
-    root='data/train', # estructura: data/train/cat/, data/train/not_cat/
-    transform=transform
-)
-
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True)
+import torchvision
+import torchvision.transforms as transforms
 
 class SimpleCNN(nn.Module):
     def __init__(self):
         super().__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 8, 3), nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(8, 16, 3), nn.ReLU(),
-            nn.MaxPool2d(2)
-        )
-        self.fc = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(16*14*14, 2)
-        )
+        self.conv1 = nn.Conv2d(1, 16, 3, 1)
+        self.conv2 = nn.Conv2d(16, 32, 3, 1)
+        self.fc1 = nn.Linear(32*5*5, 128)
+        self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
-        x = self.features(x)
-        x = self.fc(x)
+        x = nn.functional.relu(self.conv1(x))
+        x = nn.functional.max_pool2d(x, 2)
+        x = nn.functional.relu(self.conv2(x))
+        x = nn.functional.max_pool2d(x, 2)
+        x = x.view(-1, 32*5*5)
+        x = nn.functional.relu(self.fc1(x))
+        x = self.fc2(x)
         return x
+
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+train_set = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+train_loader = torch.utils.data.DataLoader(train_set, batch_size=64, shuffle=True)
 
 model = SimpleCNN()
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters())
 
-for epoch in range(10):
-    for images, labels in trainloader:
-        outputs = model(images)
-        loss = criterion(outputs, labels)
+num_epochs = 5
+for epoch in range(num_epochs):
+    model.train()
+    total_loss = 0
+    for batch_idx, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
+        output = model(data)
+        loss = criterion(output, target)
         loss.backward()
         optimizer.step()
-    print(f"Epoch {epoch+1} Loss: {loss.item()}")
+        total_loss += loss.item()
+    print(f"Epoch {epoch+1}, Loss: {total_loss/len(train_loader)}")
 
-torch.save(model.state_dict(), "cnn_cat.pth")
+torch.save(model.state_dict(), "mnist_cnn.pth")
