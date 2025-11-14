@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  llm_connector:
+    image: llm_connector_image
+    ports:
+      - "8001:8000"
+    deploy:
+      replicas: 2
+
+  sklearn_model:
+    image: sklearn_model_image
+    ports:
+      - "8002:8000"
+    deploy:
+      replicas: 2
+
+  cnn_image:
+    image: cnn_image_image
+    ports:
+      - "8003:8000"
+    deploy:
+      replicas: 2
+
+  gradio_frontend:
+    image: gradio_frontend_image
+    ports:
+      - "7860:7860"
+    deploy:
+      replicas: 1
+
+  mlflow:
+    image: mlfloworg/mlflow
+    ports:
+      - "5000:5000"
+    deploy:
+      replicas: 1
+    volumes:
+      - mlflow_data:/mlflow
+
+volumes:
+  mlflow_data:

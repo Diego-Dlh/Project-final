@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  llm_connector:
+    build: ../llm_connector
+    ports:
+      - "8001:8000"
+    restart: always
+
+  sklearn_model:
+    build: ../sklearn_model
+    ports:
+      - "8002:8000"
+    restart: always
+
+  cnn_image:
+    build: ../cnn_image
+    ports:
+      - "8003:8000"
+    restart: always
+
+  gradio_frontend:
+    build: ../gradio_frontend
+    ports:
+      - "7860:7860"
+    restart: always
+
+  mlflow:
+    image: mlfloworg/mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow:/mlflow
+    command: mlflow server --backend-store-uri /mlflow/mlflow.db --default-artifact-root ./mlflow/artifacts --host 0.0.0.0
