@@ -26,9 +26,17 @@ services:
     restart: always
 
   mlflow:
-    image: mlfloworg/mlflow
+    image: ghcr.io/mlflow/mlflow:latest
     ports:
       - "5000:5000"
     volumes:
       - ./mlflow:/mlflow
-    command: mlflow server --backend-store-uri /mlflow/mlflow.db --default-artifact-root ./mlflow/artifacts --host 0.0.0.0
+    command:
+      - mlflow
+      - server
+      - --backend-store-uri
+      - /mlflow/mlflow.db
+      - --default-artifact-root
+      - ./mlflow/artifacts
+      - --host
+      - 0.0.0.0
