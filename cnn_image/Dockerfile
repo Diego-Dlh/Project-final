@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app/ ./app/
-COPY mnist_cnn.pth ./app/
+COPY mnist_cnn.pth ./
 
 EXPOSE 8000
 
