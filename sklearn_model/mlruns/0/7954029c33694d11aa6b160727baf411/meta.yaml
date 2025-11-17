@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/diego/OneDrive/Documentos/Mlops/Project-final/sklearn_model/mlruns/0/7954029c33694d11aa6b160727baf411/artifacts
+end_time: 1763401939918
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 7954029c33694d11aa6b160727baf411
+run_name: intrigued-cod-954
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1763401929669
+status: 3
+tags: []
+user_id: diego

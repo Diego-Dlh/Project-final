@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/diego/OneDrive/Documentos/Mlops/Project-final/sklearn_model/mlruns/0/models/m-5726d00fa4f94aaeafc098abd5a4ff66/artifacts
+creation_timestamp: 1763401929816
+experiment_id: '0'
+last_updated_timestamp: 1763401939892
+model_id: m-5726d00fa4f94aaeafc098abd5a4ff66
+model_type: null
+name: model
+source_run_id: 7954029c33694d11aa6b160727baf411
+status: 2
+status_message: null
