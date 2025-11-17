@@ -1,9 +1,10 @@
 import gradio as gr
 import requests
 
-LLM_URL = "http://localhost:8000/chat"
-SPAM_URL = "http://localhost:8000/predict"
-CNN_URL = "http://localhost:8000/predict"
+# Usamos los nombres de servicio definidos en docker-compose.yml
+LLM_URL = "http://llm_connector:8000/chat"
+SPAM_URL = "http://sklearn_model:8000/predict"
+CNN_URL = "http://cnn_image:8000/predict"
 
 def llm_chat(prompt):
     response = requests.post(LLM_URL, json={"prompt": prompt})
