@@ -1,13 +1,17 @@
 import gradio as gr
 import requests
 
-# Usamos los nombres de servicio definidos en docker-compose.yml
+# URLs tal como se definen en docker-compose y servicios
 LLM_URL = "http://llm_connector:8000/chat"
 SPAM_URL = "http://sklearn_model:8000/predict"
 CNN_URL = "http://cnn_image:8000/predict"
 
 def llm_chat(prompt):
-    response = requests.post(LLM_URL, json={"prompt": prompt})
+    # Cambiado para enviar messages en nuevo formato Gemini API
+    messages = [
+        {"role": "user", "content": prompt}
+    ]
+    response = requests.post(LLM_URL, json={"messages": messages})
     return response.json().get("response", "Error en LLM")
 
 def spam_predict(text):
@@ -34,7 +38,7 @@ with gr.Blocks() as demo:
         inp3 = gr.Image(type="pil", label="Imagen")
         out3 = gr.Textbox(label="Predicción")
         inp3.change(cnn_predict, inp3, out3)
-    
+
     gr.Markdown("**Asegúrate que los servicios backend estén corriendo y en las URLs correctas.**")
 
 if __name__ == "__main__":
