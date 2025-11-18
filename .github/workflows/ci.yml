@@ -20,20 +20,20 @@ jobs:
 
       - name: Build and push llm_connector
         run: |
-          docker build -t usuario/llm_connector:latest ./llm_connector
-          docker push usuario/llm_connector:latest
+          docker build -t diegodlh/llm_connector:latest ./llm_connector
+          docker push diegodlh/llm_connector:latest
 
       - name: Build and push sklearn_model
         run: |
-          docker build -t usuario/sklearn_model:latest ./sklearn_model
-          docker push usuario/sklearn_model:latest
+          docker build -t diegodlh/sklearn_model:latest ./sklearn_model
+          docker push diegodlh/sklearn_model:latest
 
       - name: Build and push cnn_image
         run: |
-          docker build -t usuario/cnn_image:latest ./cnn_image
-          docker push usuario/cnn_image:latest
+          docker build -t diegodlh/cnn_image:latest ./cnn_image
+          docker push diegodlh/cnn_image:latest
 
       - name: Build and push gradio_frontend
         run: |
-          docker build -t usuario/gradio_frontend:latest ../gradio_frontend
-          docker push usuario/gradio_frontend:latest
+          docker build -t diegodlh/gradio_frontend:latest ../gradio_frontend
+          docker push diegodlh/gradio_frontend:latest
