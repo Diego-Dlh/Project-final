@@ -35,5 +35,5 @@ jobs:
 
       - name: Build and push gradio_frontend
         run: |
-          docker build -t diegodlh/gradio_frontend:latest ../gradio_frontend
+          docker build -t diegodlh/gradio_frontend:latest ./gradio_frontend
           docker push diegodlh/gradio_frontend:latest
