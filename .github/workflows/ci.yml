@@ -25,12 +25,12 @@ jobs:
 
       - name: Build and push sklearn_model
         run: |
-          docker build -t usuario/sklearn_model:latest ../sklearn_model
+          docker build -t usuario/sklearn_model:latest ./sklearn_model
           docker push usuario/sklearn_model:latest
 
       - name: Build and push cnn_image
         run: |
-          docker build -t usuario/cnn_image:latest ../cnn_image
+          docker build -t usuario/cnn_image:latest ./cnn_image
           docker push usuario/cnn_image:latest
 
       - name: Build and push gradio_frontend
