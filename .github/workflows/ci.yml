@@ -23,7 +23,7 @@ jobs:
 
       - name: Build and push llm_connector
         run: |
-          docker build -t usuario/llm_connector:latest ../llm_connector
+          docker build -t usuario/llm_connector:latest ./llm_connector
           docker push usuario/llm_connector:latest
 
       - name: Build and push sklearn_model
