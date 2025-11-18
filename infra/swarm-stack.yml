@@ -2,41 +2,55 @@ version: "3.8"
 
 services:
   llm_connector:
-    image: llm_connector_image
+    image: usuario/llm_connector:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
     ports:
       - "8001:8000"
-    deploy:
-      replicas: 2
+    environment:
+      - Gemini_API_KEY=${GEMINI_API_KEY}
 
   sklearn_model:
-    image: sklearn_model_image
+    image: usuario/sklearn_model:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
     ports:
       - "8002:8000"
-    deploy:
-      replicas: 2
 
   cnn_image:
-    image: cnn_image_image
-    ports:
-      - "8003:8000"
+    image: usuario/cnn_image:latest
     deploy:
       replicas: 2
+      restart_policy:
+        condition: any
+    ports:
+      - "8003:8000"
 
   gradio_frontend:
-    image: gradio_frontend_image
+    image: usuario/gradio_frontend:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
     ports:
       - "7860:7860"
-    deploy:
-      replicas: 1
 
   mlflow:
-    image: mlfloworg/mlflow
+    image: ghcr.io/mlflow/mlflow:latest
     ports:
       - "5000:5000"
-    deploy:
-      replicas: 1
     volumes:
-      - mlflow_data:/mlflow
-
-volumes:
-  mlflow_data:
+      - ./mlflow:/mlflow
+    command:
+      - mlflow
+      - server
+      - --backend-store-uri
+      - /mlflow/mlflow.db
+      - --default-artifact-root
+      - ./mlflow/artifacts
+      - --host
+      - 0.0.0.0
